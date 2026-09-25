@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mind map — Денежные расстановки на картах</title>
+<style>
+:root {
+  --navy:#071426;
+  --navy2:#0b203c;
+  --ink:#13243a;
+  --gold:#d8b15a;
+  --gold2:#f1d691;
+  --cream:#f8f3e7;
+  --ice:#edf4fb;
+  --white:#ffffff;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 15% 15%, rgba(216,177,90,.12), transparent 24rem),
+    radial-gradient(circle at 85% 35%, rgba(255,255,255,.08), transparent 20rem),
+    linear-gradient(180deg,#05111f 0,#071426 38%,#0a1a2d 100%);
+  min-height:100vh;
+}
+a{color:inherit}
+.hero{
+  padding:54px 20px 30px;
+  color:white;
+  text-align:center;
+}
+.eyebrow{
+  letter-spacing:.16em;
+  font-size:12px;
+  color:var(--gold2);
+  text-transform:uppercase;
+  margin-bottom:12px;
+}
+h1{
+  max-width:900px;
+  margin:0 auto 14px;
+  font-family:Georgia, 'Times New Roman', serif;
+  font-weight:600;
+  line-height:1.05;
+  font-size:clamp(34px,6vw,72px);
+}
+.hero p{
+  max-width:850px;
+  margin:0 auto;
+  color:#dce7f4;
+  line-height:1.7;
+}
+.map-wrap{
+  max-width:1250px;
+  margin:0 auto;
+  padding:22px 20px 46px;
+}
+.intro-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+  margin-bottom:28px;
+}
+.intro-card{
+  background:linear-gradient(145deg,rgba(255,255,255,.98),rgba(248,243,231,.98));
+  border:1px solid rgba(216,177,90,.45);
+  border-radius:20px;
+  padding:20px;
+  line-height:1.55;
+  box-shadow:0 14px 40px rgba(0,0,0,.18);
+}
+.mindmap{
+  position:relative;
+  min-height:720px;
+  border:1px solid rgba(216,177,90,.35);
+  border-radius:34px;
+  background:
+    radial-gradient(circle at center, rgba(216,177,90,.13), transparent 18rem),
+    linear-gradient(145deg,rgba(11,32,60,.96),rgba(5,17,31,.98));
+  overflow:hidden;
+  box-shadow:0 28px 80px rgba(0,0,0,.32);
+}
+.mindmap:before{
+  content:"";
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:32px 32px;
+  pointer-events:none;
+}
+.center-node{
+  position:absolute;
+  left:50%;top:50%;
+  transform:translate(-50%,-50%);
+  width:240px;height:240px;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  text-align:center;
+  padding:30px;
+  color:#071426;
+  background:radial-gradient(circle at 35% 25%,#fff7df 0,#efd087 42%,#c89a3c 100%);
+  border:8px solid rgba(255,255,255,.15);
+  box-shadow:0 0 0 1px rgba(216,177,90,.7),0 25px 60px rgba(0,0,0,.35);
+  z-index:3;
+  font-family:Georgia,'Times New Roman',serif;
+  font-weight:700;
+  line-height:1.18;
+}
+.center-node span{font-size:13px;display:block;margin-top:10px;font-family:Inter,sans-serif;font-weight:600}
+.node{
+  position:absolute;
+  width:250px;
+  min-height:86px;
+  padding:14px 16px;
+  border-radius:18px;
+  border:1px solid rgba(216,177,90,.6);
+  background:linear-gradient(145deg,#fff,#f7f1e4);
+  color:var(--ink);
+  text-align:left;
+  cursor:pointer;
+  box-shadow:0 14px 28px rgba(0,0,0,.22);
+  transition:.25s ease;
+  z-index:4;
+}
+.node:hover{transform:translateY(-4px) scale(1.02);box-shadow:0 18px 36px rgba(0,0,0,.32)}
+.node-index{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:31px;height:31px;border-radius:50%;
+  background:var(--navy);color:var(--gold2);
+  font-size:11px;font-weight:800;margin-right:8px;vertical-align:middle;
+}
+.node-title{font-weight:800;line-height:1.2;vertical-align:middle}
+.node-1{left:4%;top:7%}
+.node-2{left:38%;top:4%}
+.node-3{right:4%;top:8%}
+.node-4{left:2%;top:33%}
+.node-5{right:2%;top:32%}
+.node-6{left:5%;bottom:10%}
+.node-7{left:38%;bottom:5%}
+.node-8{right:5%;bottom:11%}
+.node-9{left:38%;top:23%}
+
+.connectors svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+.connectors line{stroke:rgba(216,177,90,.42);stroke-width:2}
+
+.overlay{
+  position:fixed;inset:0;
+  background:rgba(3,10,19,.78);
+  backdrop-filter:blur(8px);
+  display:none;align-items:center;justify-content:center;
+  padding:24px;z-index:99;
+}
+.overlay.open{display:flex}
+.detail-panel{
+  width:min(920px,96vw);
+  max-height:88vh;
+  overflow:auto;
+  border-radius:26px;
+  background:linear-gradient(180deg,#fffdf8,#f5efe2);
+  border:1px solid rgba(216,177,90,.7);
+  box-shadow:0 30px 90px rgba(0,0,0,.5);
+  padding:30px;
+  position:relative;
+}
+.detail-kicker{color:#9b741f;font-weight:800;letter-spacing:.14em;font-size:12px;margin-bottom:14px}
+.detail-panel pre{
+  white-space:pre-wrap;
+  font:inherit;
+  line-height:1.62;
+  margin:0;
+  color:#17263a;
+}
+.close-panel{
+  position:sticky;float:right;top:0;
+  border:none;width:38px;height:38px;border-radius:50%;
+  background:var(--navy);color:white;font-size:24px;cursor:pointer;
+}
+.cta{
+  margin-top:26px;
+  display:grid;grid-template-columns:1.5fr .8fr;
+  gap:18px;
+  border-radius:28px;
+  padding:28px;
+  background:linear-gradient(135deg,#f8f3e7,#eef5fb);
+  border:1px solid rgba(216,177,90,.55);
+  box-shadow:0 20px 54px rgba(0,0,0,.2);
+}
+.cta pre{white-space:pre-wrap;font:inherit;line-height:1.6;margin:0}
+.links{display:flex;flex-direction:column;gap:12px;justify-content:center}
+.linkbtn{
+  display:block;text-decoration:none;text-align:center;
+  padding:16px 18px;border-radius:15px;font-weight:800;
+  background:var(--navy);color:white;border:1px solid var(--gold);
+  transition:.2s ease;
+}
+.linkbtn:hover{transform:translateY(-2px);background:#102b4e}
+.linkbtn.gold{background:linear-gradient(135deg,#c7983b,#efd17e);color:#091526;border:none}
+
+@media (max-width:900px){
+  .intro-grid{grid-template-columns:1fr}
+  .mindmap{min-height:auto;padding:22px;display:grid;gap:12px}
+  .center-node{position:relative;left:auto;top:auto;transform:none;width:auto;height:auto;border-radius:24px;margin-bottom:8px}
+  .node{position:relative!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;width:100%;min-height:unset}
+  .connectors{display:none}
+  .cta{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="eyebrow">Интерактивная mind map</div>
+  <h1>Самые частые запросы с психологических форумов</h1>
+  <p>Нажмите на любой запрос — откроется полная расшифровка.</p>
+</header>
+
+<main class="map-wrap">
+  <section class="intro-grid">
+    <article class="intro-card">Я собрала самые частые запросы людей, которые ищут ответы на психологических форумах. Это те запросы, с которыми клиенты ходят к психологам, кармологам, нумерологам, другим помогающим практикам, и далеко не всегда могут действительно найти ответы. Иногда ходят годами, без особого результата, и это обсуждается на форумах.</article>
+    <article class="intro-card">Я перерыла огромное количество форумов и вывела самые распространенные запросы, которыми переполнены форумы. Это те запросы, которые, если вы сможете работать и сможете о них писать, вы будете достаточно легко привлекать клиентов.</article>
+    <article class="intro-card">Также я написала, какой путь от запроса до его разрешения, какими в какие уровни причинности смотреть и какими техниками это прорабатывается.</article>
+  </section>
+
+  <section class="mindmap">
+    <div class="connectors">
+      <svg viewBox="0 0 1200 720" preserveAspectRatio="none">
+        <line x1="600" y1="360" x2="150" y2="90"/>
+        <line x1="600" y1="360" x2="510" y2="80"/>
+        <line x1="600" y1="360" x2="1040" y2="100"/>
+        <line x1="600" y1="360" x2="140" y2="285"/>
+        <line x1="600" y1="360" x2="1050" y2="285"/>
+        <line x1="600" y1="360" x2="150" y2="625"/>
+        <line x1="600" y1="360" x2="515" y2="650"/>
+        <line x1="600" y1="360" x2="1035" y2="620"/>
+        <line x1="600" y1="360" x2="515" y2="205"/>
+      </svg>
+    </div>
+    <div class="center-node">Запрос → диагностика → путь работы<span>нажмите на ветку</span></div>
+    <button class="node node-1" data-target="panel-1" aria-expanded="false">
+      <span class="node-index">01</span>
+      <span class="node-title">почему все в роду женщины разводятся</span>
+    </button><button class="node node-2" data-target="panel-2" aria-expanded="false">
+      <span class="node-index">02</span>
+      <span class="node-title">Мужчины рано умирают</span>
+    </button><button class="node node-3" data-target="panel-3" aria-expanded="false">
+      <span class="node-index">03</span>
+      <span class="node-title">Финансовая зависимость от семьи</span>
+    </button><button class="node node-4" data-target="panel-4" aria-expanded="false">
+      <span class="node-index">04</span>
+      <span class="node-title">Обиды</span>
+    </button><button class="node node-5" data-target="panel-5" aria-expanded="false">
+      <span class="node-index">05</span>
+      <span class="node-title">Проблемы с сепарацией и родителями / Отношения с мамой/родителями тянут на дно</span>
+    </button><button class="node node-6" data-target="panel-6" aria-expanded="false">
+      <span class="node-index">06</span>
+      <span class="node-title">Не могу пробить финансовый потолок</span>
+    </button><button class="node node-7" data-target="panel-7" aria-expanded="false">
+      <span class="node-index">07</span>
+      <span class="node-title">Долги</span>
+    </button><button class="node node-8" data-target="panel-8" aria-expanded="false">
+      <span class="node-index">08</span>
+      <span class="node-title">Ощущение «это карма / родовое проклятие»</span>
+    </button><button class="node node-9" data-target="panel-9" aria-expanded="false">
+      <span class="node-index">09</span>
+      <span class="node-title">Бессилие перед повторяющейся судьбой родственников.</span>
+    </button>
+  </section>
+
+  <section class="cta">
+    <pre>ВНИМАНИЕ! 
+
+Обучиться в Германии онлайн Денежным расстановкам на картах с акредитацией онлайн-Аусбильдунг (Федеральное бюро онлайн образования) + признание от ELPSY (European League of Psychologists) старт 27 октября!
+
+Получить востребованную специализацию с официальным сертификатам и больше не бояться официально практиковать в любой стране Европы и за ее пределами! 
+
+Перейди на сайт и оставь заявку! 
+https://svetgorbach.com/drnk</pre>
+    <div class="links">
+      <a class="linkbtn gold" href="https://svetgorbach.com/drnk" target="_blank" rel="noopener">Перейти на сайт курса</a>
+      <a class="linkbtn" href="https://t.me/HorbachASC" target="_blank" rel="noopener">Отдел заботы</a>
+    </div>
+  </section>
+</main>
+
+<div class="overlay" id="overlay" aria-hidden="true">
+  <section class="detail-panel" id="panel-1" hidden>
+      <button class="close-panel" aria-label="Закрыть">×</button>
+      <div class="detail-kicker">РАСШИФРОВКА</div>
+      <pre>почему все в роду женщины разводятся 
+
+Основное желание выйти из повторяющегося сценария и устроить свою жизнь
+
+ -   На этапе диагностики тестируются уровни на которых находятся причины: 1 - уровень травм детства, уровень родительского внушения, переплетения/лояльности женщинам рода, наследование судьбы, как способ сохранить связь с мамой/бабушкой. По результатам диагностики проводятся практики Сепарации на всех уровнях (с техниками расширенной сепарации) Выход из родовой боли, Устранение влияния родовой программы (практика работы с симптомами), при необходимости техника География Заряда - устранение влияния инкарнационного заряда
+Все эти практики специалисты изучают в курсе Денежные расстановки на картах - курс немецкой Академии Системного Консалтинга с государственной аккредитацией.</pre>
+    </section><section class="detail-panel" id="panel-2" hidden>
+      <button class="close-panel" aria-label="Закрыть">×</button>
+      <div class="detail-kicker">РАСШИФРОВКА</div>
+      <pre>Мужчины рано умирают 
+
+- Основное желание - выйти из риска раннего ухода и устроить свою жизнь - На этапе диагностики тестируется уровни причинности. Работаем через исследование влияет ли симптом на клиента. Если да, находим «Хозяина симптома» и выясняем какая функция связи удерживает симптом. Выравниваем связи и завершаем необходимость наследовать симптом. Делаем практику Связь со своим Личным успехом и Жизнью
+Все эти практики специалисты изучают в курсе Денежные расстановки на картах - курс немецкой Академии Системного Консалтинга с государственной аккредитацией.</pre>
+    </section><section class="detail-panel" id="panel-3" hidden>
+      <button class="close-panel" aria-label="Закрыть">×</button>
+      <div class="detail-kicker">РАСШИФРОВКА</div>
+      <pre>Финансовая зависимость от семьи - Основное желание обрести финансовую независимости и пересмотреть связи в семье. На этапе диагностики проверяем на каких уровнях находятся причины зависимости: В этой жизни, Следствие родовых программ, Инракнационные незавершенные связи? Сколько причин у этой зависимости? Есть ли сложности взрослея и отношения с ответственностью. Находим ключевые незавершенные истории, которые проявляются через необходимость финансово зависеть. Основные техники работы: Сепарация, Выход в Мир и контакт с Деньгами, при необходимости География Заряда и «Как снять себя с тормоза» 
+Все эти практики специалисты изучают в курсе Денежные расстановки на картах - курс немецкой Академии Системного Консалтинга с государственной аккредитацией.</pre>
+    </section><section class="detail-panel" id="panel-4" hidden>
+      <button class="close-panel" aria-label="Закрыть">×</button>
+      <div class="detail-kicker">РАСШИФРОВКА</div>
+      <pre>Обиды - Основное желание - освободиться от эмоционального “паразита”, которых съедает огромное количество энергии и блокирует и развитие отношения и общео благополучия. 
+
+Обида -это сигнал о несогласии и не готовности признать это несогласие. Если все, что вы проявляете находит согласие в вашей Душе, и у вас нет ожиданий подтверждения вашей ценности от других, обидеть вас невозможно. 
+
+Обида - это способ сохранить связь и надежда получить компенсацию без признания и изменения факторов, которые вызывают несогласие. . Соответственно у обиды мощные вторичные выгода. 
+И тогда работаем с выявлением основных факторов с которыми человек в себе не согласен. Выявляем причины этого несогласия - техника География заряда
+
+Выявляем и устраняем Вторичные выгоды обиды - можно через Симптор или технику работы с Убеждениями. 
+
+Все эти практики специалисты изучают в курсе Денежные расстановки на картах - курс немецкой Академии Системного Консалтинга с государственной аккредитацией.</pre>
+    </section><section class="detail-panel" id="panel-5" hidden>
+      <button class="close-panel" aria-label="Закрыть">×</button>
+      <div class="detail-kicker">РАСШИФРОВКА</div>
+      <pre>Проблемы с сепарацией и родителями / Отношения с мамой/родителями тянут на дно- Основное желание - это отделение от родителей, связанное с разделением наших судеб.
+Это возможность идти собственным путём, в нужном именно нам направлении.
+
+Сепарация может быть затруднена с одним или с обоими родителями. 
+Для того, чтобы жить свою жизнь надо повзрослеть до возможности различать свою ответственность от чужой и брать ответственность за свою жизнь. Без сепарации это не возожно. 
+На этапе диагностики проверяем что затрудняет сепарацию. (тем же способом, которым можно определять ключевой заряд в Географии Заряда) 
+Реинкарнационные связи, Травма, Смыслобразующие факторы (например: когда обслуживать родителей и заслуживать хорошесть является смыслом) Страх выходить в Мир, Ожидания, Разочарование, Слияние с кем то из родителей, Замещение родителю какой то другой фигуры
+
+Находим ключевую заряженую ситуацию и нейтрализуем заряд. Техники, которые можно использовать: Сепарация, География заряда, Контакт с холодным Социумом, Выход их триангуляции, Выход из слияния, Выход из парентификации, Выход из лояльности и переплетений 
+
+Проверяем какие пункты актуальны, а какие уже не держат 
+
+Все эти практики специалисты изучают в курсе Денежные расстановки на картах - курс немецкой Академии Системного Консалтинга с государственной аккредитацией.</pre>
+    </section><section class="detail-panel" id="panel-6" hidden>
+      <button class="close-panel" aria-label="Закрыть">×</button>
+      <div class="detail-kicker">РАСШИФРОВКА</div>
+      <pre>Не могу пробить финансовый потолок - Основное желание - ощутить деньги есть на большее и устойчиво сохраняютя с ростом качества и уровня жизни. На этапе диагностики проверяются уровни причинности. В этом запросе вариантов может быть много, поэтому самый простой способ исследовать взаимодействие с деньгами, с реализацией проектов и проявленнстью. 
+
+Буквально через Я и Деньги, Я и действия ведущие к деньгам, Я и проявленность или Я и Люди. И в каждом случае определять где ведущих заряд. 
+
+Подходящие практики Как снять с себя с тормоза, КОнтакт со Взрослыми деньгами, Перевод препятствия в ресурс. 
+Все эти практики специалисты изучают в курсе Денежные расстановки на картах - курс немецкой Академии Системного Консалтинга с государственной аккредитацией.</pre>
+    </section><section class="detail-panel" id="panel-7" hidden>
+      <button class="close-panel" aria-label="Закрыть">×</button>
+      <div class="detail-kicker">РАСШИФРОВКА</div>
+      <pre>Долги - Основное желание вернуть ощущение свободы и возможности сохранять деньги для своих нужд  и тратить по своему усмотрению без чувства вины.
+ Долги - всегда симптом. Симптом, взятый у кого то. Исследуем на каком уровне находится Хозяин симптома. Завершаем искажения в связи и возвращаем Симптом Хозяину. Так же проверяем есть ли контакт со Взрослыми деньгами. 
+
+Подходящие техники: Работа с Симптомом + Контакт со Взрослыми деньгами. 
+
+Все эти практики специалисты изучают в курсе Денежные расстановки на картах - курс немецкой Академии Системного Консалтинга с государственной аккредитацией.</pre>
+    </section><section class="detail-panel" id="panel-8" hidden>
+      <button class="close-panel" aria-label="Закрыть">×</button>
+      <div class="detail-kicker">РАСШИФРОВКА</div>
+      <pre>Ощущение «это карма / родовое проклятие» - Основное желание - ощущение облегчения, завершение серии негативных событий, возможрность Жить и влиять на свою жизнь. На этапе диагностики проверяем есть ли симптом или ощущение идет корнями в личную еспомощность или выгорание. 
+
+Если симптом есть можно начать с Вывод из Родовой Боли. Можно работать с техникой Симптом или География Заряда. 
+
+Все эти практики специалисты изучают в курсе Денежные расстановки на картах - курс немецкой Академии Системного Консалтинга с государственной аккредитацией.</pre>
+    </section><section class="detail-panel" id="panel-9" hidden>
+      <button class="close-panel" aria-label="Закрыть">×</button>
+      <div class="detail-kicker">РАСШИФРОВКА</div>
+      <pre>Бессилие перед повторяющейся судьбой родственников. - работаем по тем же схемам, что и в пункте выше. Добавляем проверку Есть ли претензии к Создателю, так как не согласие с судьбой другого может нарушить контакт с Создателем и это приведет к сложным событиям в жизни самого клиента. 
+
+Все эти практики специалисты изучают в курсе Денежные расстановки на картах - курс немецкой Академии Системного Консалтинга с государственной аккредитацией.</pre>
+    </section>
+</div>
+
+<script>
+const overlay = document.getElementById('overlay');
+const nodes = document.querySelectorAll('.node');
+const panels = document.querySelectorAll('.detail-panel');
+
+function closeAll(){
+  panels.forEach(p => p.hidden = true);
+  nodes.forEach(n => n.setAttribute('aria-expanded','false'));
+  overlay.classList.remove('open');
+  overlay.setAttribute('aria-hidden','true');
+}
+nodes.forEach(node => {
+  node.addEventListener('click', () => {
+    closeAll();
+    const panel = document.getElementById(node.dataset.target);
+    panel.hidden = false;
+    node.setAttribute('aria-expanded','true');
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden','false');
+  });
+});
+document.querySelectorAll('.close-panel').forEach(btn => btn.addEventListener('click', closeAll));
+overlay.addEventListener('click', e => { if(e.target === overlay) closeAll(); });
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeAll(); });
+</script>
+</body>
+</html>
